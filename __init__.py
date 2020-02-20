@@ -24,6 +24,17 @@ DATA_PATH = DIR_PATH / "data.json"
 BACKUP_PATH = DIR_PATH / "backups"
 
 
+def create_missing_dir():
+    if not DIR_PATH.is_dir():
+        DIR_PATH.mkdir()
+
+    if not DATA_PATH.is_file():
+        DATA_PATH.write_text("{}")
+
+    if not BACKUP_PATH.is_dir():
+        BACKUP_PATH.mkdir()
+
+
 def delete_today_backup():
     tday_str = datetime.now().strftime("%Y_%m_%d_")
     for fname in BACKUP_PATH.iterdir():
@@ -33,14 +44,14 @@ def delete_today_backup():
             fpth.unlink()
 
 
-def create_backup(datastr):
+def create_backup(data):
     # one backup for each day
     delete_today_backup()
     timestr = datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
     fname = timestr + ".json"
     path = BACKUP_PATH / fname
-    with path.open("w+") as f:
-        json.dump(datastr, f)
+    path.write_text(data)
+        
 
 
 def get_data():
@@ -58,17 +69,18 @@ def get_data():
         }
     }"
     """
+    create_missing_dir()
     datastr = DATA_PATH.read_text()
     return datastr
 
 
 def write_data(datastr):
+    create_missing_dir()
     create_backup(datastr)
     DATA_PATH.write_text(datastr)
 
 
 def heatmap_html():
-    tooltip("AS")
     return """
     <link rel="stylesheet" href="/_addons/{0}/web/calendar-heatmap.css"></script>
     <script src="/_addons/{0}/web/d3.min.js"></script>
