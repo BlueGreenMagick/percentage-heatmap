@@ -23,6 +23,9 @@ DIR_PATH = Path(__file__).parents[0] / "user_files"
 DATA_PATH = DIR_PATH / "data.json"
 BACKUP_PATH = DIR_PATH / "backups"
 
+NEW_MOD = 2 * 1.05
+REV_MOD = 1.05
+
 
 def create_missing_dir():
     if not DIR_PATH.is_dir():
@@ -107,7 +110,7 @@ where id > ?""",
         name, did, due, lrn, new, children = node
         if "::" in mw.col.decks.get(did):
             continue
-        due_cards += (due + lrn + new)
+        due_cards += (due + lrn) * REV_MOD + new * NEW_MOD
 
     return (done_cards, due_cards)
 
