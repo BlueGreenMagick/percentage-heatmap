@@ -118,6 +118,7 @@ def save_perc(*args, **kwargs):
         perc = 1
     else:
         perc = donecnt / (donecnt+duecnt)
+        perc = round(perc, 2)
     now = datetime.now()
     year = str(now.year)
     month = str(now.month - 1)
