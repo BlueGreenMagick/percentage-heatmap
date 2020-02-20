@@ -140,7 +140,7 @@ function calendarHeatmap() {
   
         dayRects = svg.selectAll('.day-cell')
           .data(dateRange);  //  array of days for the last yr
-  
+        
         var enterSelection = dayRects.enter().append('rect')
           .attr('class', 'day-cell')
           .attr('width', SQUARE_LENGTH)
@@ -161,14 +161,14 @@ function calendarHeatmap() {
             onClick({ date: d, count: count});
           });
         }
-  
+        var allRects = svg.selectAll('.day-cell')._groups[0]; //TODO: Change this to d3 friendly way.
         if (chart.tooltipEnabled()) {
-          (v === 3 ? enterSelection : enterSelection.merge(dayRects)).on('mouseover', function(d, i) {
+          (v === 3 ? enterSelection : enterSelection.merge(dayRects)).on('mouseover', function(d, i, n) {
             tooltip = d3.select(chart.selector())
               .append('div')
               .attr('class', 'day-cell-tooltip')
               .html(tooltipHTMLForDate(d))
-              .style('left', function () { return Math.floor(i / 7) * SQUARE_LENGTH + 'px'; })
+              .style('left', function () { return allRects[i].getBoundingClientRect().left + "px"})
               .style('top', function () {
                 return formatWeekday(d.getDay()) * (SQUARE_LENGTH + SQUARE_PADDING) + MONTH_LABEL_PADDING * 2 + 'px';
               });
