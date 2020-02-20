@@ -26,7 +26,7 @@ function ADDON_createPercHeatmap(jsonstr, year){
                     value = dt[month][date]; //number
                 }
             }
-            chartData[idx] = {"date": dateObj, "count": value * 100};
+            chartData[idx] = {"date": dateObj, "count": Math.round(value * 100)};
         }
     }
 
