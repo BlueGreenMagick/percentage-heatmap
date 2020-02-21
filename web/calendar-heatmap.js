@@ -1,7 +1,7 @@
 function calendarHeatmap() {
     // defaults
     var width = 640;
-    var height = 110;
+    var height = 120;
     var legendWidth = 150;
     var selector = 'body';
     var SQUARE_LENGTH = 10;
@@ -31,6 +31,7 @@ function calendarHeatmap() {
     var color = ((d3.scale && d3.scale.linear) || d3.scaleLinear)()
     .range(colorRange)
     .domain([0, max]);
+    var LEGENDMARGIN = 10;
   
     // setters and getters
     chart.data = function (value) {
@@ -136,7 +137,8 @@ function calendarHeatmap() {
           .attr('width', width)
           .attr('class', 'calendar-heatmap')
           .attr('height', height)
-          .style('padding', '36px');
+          .style('padding-top', '36px')
+          .style('padding-bottom', '6px');
   
         dayRects = svg.selectAll('.day-cell')
           .data(dateRange);  //  array of days for the last yr
@@ -153,7 +155,7 @@ function calendarHeatmap() {
             return result * (SQUARE_LENGTH + SQUARE_PADDING);
           })
           .attr('y', function (d, i) {
-            return MONTH_LABEL_PADDING + formatWeekday(d.getDay()) * (SQUARE_LENGTH + SQUARE_PADDING);
+            return LEGENDMARGIN + MONTH_LABEL_PADDING + formatWeekday(d.getDay()) * (SQUARE_LENGTH + SQUARE_PADDING);
           });
   
         if (typeof onClick === 'function') {
@@ -194,19 +196,19 @@ function calendarHeatmap() {
               .attr('width', SQUARE_LENGTH)
               .attr('height', SQUARE_LENGTH)
               .attr('x', function (d, i) { return (width - legendWidth) + (i + 1) * 13; })
-              .attr('y', height + SQUARE_PADDING)
+              .attr('y', LEGENDMARGIN + height + SQUARE_PADDING)
               .attr('fill', function (d) { return d; });
   
           legendGroup.append('text')
             .attr('class', 'calendar-heatmap-legend-text calendar-heatmap-legend-text-less')
             .attr('x', width - legendWidth - 13)
-            .attr('y', height + SQUARE_LENGTH)
+            .attr('y', LEGENDMARGIN + height + SQUARE_LENGTH)
             .text(locale.Less);
   
           legendGroup.append('text')
             .attr('class', 'calendar-heatmap-legend-text calendar-heatmap-legend-text-more')
             .attr('x', (width - legendWidth + SQUARE_PADDING) + (colorRange.length + 1) * 13)
-            .attr('y', height + SQUARE_LENGTH)
+            .attr('y', LEGENDMARGIN + height + SQUARE_LENGTH)
             .text(locale.More);
         }
   
@@ -215,6 +217,7 @@ function calendarHeatmap() {
             .data(monthRange)
             .enter().append('text')
             .attr('class', 'month-name')
+            .style('fill', 'grey')
             .text(function (d) {
               return locale.months[d.getMonth()];
             })
@@ -225,9 +228,9 @@ function calendarHeatmap() {
                 return moment(d).isSame(element, 'month') && moment(d).isSame(element, 'year');
               });
   
-              return Math.floor(matchIndex / 7) * (SQUARE_LENGTH + SQUARE_PADDING);
+              return Number(allRects[matchIndex].getAttribute('x')) + SQUARE_LENGTH * 2;
             })
-            .attr('y', 0);  // fix these to the top
+            .attr('y', LEGENDMARGIN);  // fix these to the top
   
         locale.days.forEach(function (day, index) {
           index = formatWeekday(index);

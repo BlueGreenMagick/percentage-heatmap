@@ -53,6 +53,7 @@ function ADDON_createPercHeatmap(jsonstr, year){
               .max(100)
               .color(colorFunc)
               .startDate(moment([year, 0, 1]).toDate())
+              .legendEnabled(true)
               .tooltipUnit(
                 [
                   {min: -100, max: -1, unit:'No Data'},

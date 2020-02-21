@@ -1,6 +1,6 @@
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from aqt import AnkiQt
@@ -25,6 +25,8 @@ BACKUP_PATH = DIR_PATH / "backups"
 
 NEW_MOD = 2 * 1.05
 REV_MOD = 1.05
+
+DONE_THRESHHOLD = 0.99
 
 
 def create_missing_dir():
@@ -82,17 +84,67 @@ def write_data(datastr):
     create_backup(datastr)
     DATA_PATH.write_text(datastr)
 
+def get_date(delta = 0):
+    now = datetime.now() - timedelta(delta)
+    year = str(now.year)
+    month = str(now.month - 1)
+    date = str(now.day)
+    return (year, month, date)
+
+def get_stats_from_data(data):
+    done_days = 0
+    day_cnt = 0
+    tot_perc = 0
+    for year in data:
+        yearlydata = data[year]
+        for month in yearlydata:
+            monthlydata = yearlydata[month]
+            for date in monthlydata:
+                day_cnt += 1
+                tot_perc += monthlydata[date]
+                if monthlydata[date] > DONE_THRESHHOLD:
+                    done_days += 1
+
+    if day_cnt  == 0:
+        #avoid division by 0
+        day_cnt = 1
+    done_perc = round(done_days / day_cnt * 100)
+
+    avg_perc = round(tot_perc / day_cnt * 100)
+    
+    streak = True
+    streak_d = 0
+    while(streak):
+        year, month, date = get_date(streak_d)
+        try:
+            if(data[year][month][date] > DONE_THRESHHOLD):
+                streak_d += 1
+            else:
+                streak = False
+        except:
+            streak = False
+    
+    return (avg_perc, done_perc, streak_d)
+    
 
 def heatmap_html():
+    datastr = get_data()
+    data = json.loads(datastr)
+    stats = get_stats_from_data(data)
     return """
-    <link rel="stylesheet" href="/_addons/{0}/web/calendar-heatmap.css"></script>
-    <script src="/_addons/{0}/web/d3.min.js"></script>
-    <script src="/_addons/{0}/web/moment.js"></script>
-    <script src="/_addons/{0}/web/calendar-heatmap.js"></script>
-    <script>window.ADDON_percjsonstr = `{1}`; window.ADDON_percyear = "{2}";</script>
-    <div id="percHeatmap"></div>
-    <script src="/_addons/{0}/web/main.js"></script>
-    """.format(ADDON_NAME, get_data(), "2020")
+<link rel="stylesheet" href="/_addons/{0}/web/calendar-heatmap.css"></script>
+<script src="/_addons/{0}/web/d3.min.js"></script>
+<script src="/_addons/{0}/web/moment.js"></script>
+<script src="/_addons/{0}/web/calendar-heatmap.js"></script>
+<script>window.ADDON_percjsonstr = `{1}`; window.ADDON_percyear = "{2}";</script>
+<div id="percHeatmap"></div>
+<div id="percHeatmapFoot">
+    <span class="percFoot">Daily Average: {3} %</span>
+    <span class="percFoot">Completed Days: {4}%</span>
+    <span class="percFoot">Current Streak: {5} days</span>
+</div>
+<script src="/_addons/{0}/web/main.js"></script>
+    """.format(ADDON_NAME, datastr, "2020", stats[0], stats[1], stats[2])
 
 
 def get_today_perc_stat():
@@ -122,12 +174,9 @@ def save_perc(*args, **kwargs):
     else:
         perc = donecnt / (donecnt+duecnt)
         perc = round(perc, 2)
-    now = datetime.now()
-    year = str(now.year)
-    month = str(now.month - 1)
-    date = str(now.day)
+
     percdict = json.loads(get_data())
-    
+    year, month, date = get_date()
     if year not in percdict:
         percdict[year] = {}
     yeardict = percdict[year]
