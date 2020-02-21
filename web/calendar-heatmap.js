@@ -1,10 +1,10 @@
 function calendarHeatmap() {
     // defaults
-    var width = 750;
+    var width = 640;
     var height = 110;
     var legendWidth = 150;
     var selector = 'body';
-    var SQUARE_LENGTH = 11;
+    var SQUARE_LENGTH = 10;
     var SQUARE_PADDING = 2;
     var MONTH_LABEL_PADDING = 6;
     var now = moment().endOf('day').toDate();
@@ -146,6 +146,7 @@ function calendarHeatmap() {
           .attr('width', SQUARE_LENGTH)
           .attr('height', SQUARE_LENGTH)
           .attr('fill', function(d) { return color(countForDate(d)); })
+          .style('stroke-width', function(d){return strokeStyle(d)})
           .attr('x', function (d, i) {
             var cellDate = moment(d);
             var result = cellDate.week() - firstDate.week() + (firstDate.weeksInYear() * (cellDate.weekYear() - firstDate.weekYear()));
@@ -265,6 +266,12 @@ function calendarHeatmap() {
       function countForDate(d) {
           var key= moment(d).format( 'YYYY-MM-DD' );
           return counterMap[key] || 0;
+      }
+
+      function strokeStyle(d){
+        if(moment(d).isSame(moment(), 'day')){
+          return "1px"
+        }
       }
   
       function formatWeekday(weekDay) {

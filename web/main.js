@@ -31,7 +31,7 @@ function ADDON_createPercHeatmap(jsonstr, year){
     }
 
 
-    var colors = ["#616469", "#9da5b4", "#c6e48b", "#7bc96f", "#239a3b"];
+    var colors = ["#222222", "#44475a", "#a4d06f", "#44a340", "#126823"];
     var colorFunc = function(cnt){
         if(cnt > 99){
             return colors[4];
