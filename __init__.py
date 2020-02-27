@@ -209,4 +209,4 @@ addHook("beforeStateChange", on_state_change)
 AnkiQt.closeEvent = wrap(AnkiQt.closeEvent, save_perc, "around")
 DeckBrowser._renderStats = wrap(
     DeckBrowser._renderStats, custom_render_stats, "around")
-mw.addonManager.setWebExports(__name__, r"web/.*(css|js)")
+mw.addonManager.setWebExports(__name__, r"web(\/|\\).*\.(css|js)")
