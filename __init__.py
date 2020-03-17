@@ -3,7 +3,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from aqt import AnkiQt
+from aqt.main import AnkiQt
 from anki.hooks import wrap, addHook
 from anki.utils import intTime
 try:
