@@ -29,6 +29,8 @@ REV_MOD = 1.05
 DONE_THRESHHOLD = 0.99
 
 
+config = mw.addonManager.getConfig(__name__)
+
 def create_missing_dir():
     if not DIR_PATH.is_dir():
         DIR_PATH.mkdir()
@@ -136,15 +138,15 @@ def heatmap_html():
 <script src="/_addons/{0}/web/d3.min.js"></script>
 <script src="/_addons/{0}/web/moment.js"></script>
 <script src="/_addons/{0}/web/calendar-heatmap.js"></script>
-<script>window.ADDON_percjsonstr = `{1}`; window.ADDON_percyear = "{2}";</script>
+<script>window.ADDON_percjsonstr = `{1}`; window.ADDON_percyear = "{2}"; window.ADDON_perccolors={3};</script>
 <div id="percHeatmap"></div>
 <div id="percHeatmapFoot">
-    <span class="percFoot">Daily Average: {3} %</span>
-    <span class="percFoot">Completed Days: {4}%</span>
-    <span class="percFoot">Current Streak: {5} days</span>
+    <span class="percFoot">Daily Average: {4} %</span>
+    <span class="percFoot">Completed Days: {5}%</span>
+    <span class="percFoot">Current Streak: {6} days</span>
 </div>
 <script src="/_addons/{0}/web/main.js"></script>
-    """.format(ADDON_NAME, datastr, "2020", stats[0], stats[1], stats[2])
+    """.format(ADDON_NAME, datastr, config["year"], config["colors"], stats[0], stats[1], stats[2])
 
 
 def get_today_perc_stat():
